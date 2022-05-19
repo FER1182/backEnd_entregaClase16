@@ -1,32 +1,21 @@
+const express = require("express");
 const fs = require("fs");
 const nombreArchivo = "productos.json";
 const encodingFile= "utf-8"
-
-
+const knex = require("../src/db")
+const app = express()
+app.use(express.json())
 
 class Contenedor {
   constructor(nombre) {
     this.nombre = nombre;
   }
     save(obj) {
-      try {
-        let siExiste = this.getAll();
-        if (typeof siExiste == "object") {
-          siExiste.length > 0
-            ? (obj.id = siExiste[siExiste.length - 1].id + 1)
-            : (obj.id = 1);
-           
-          siExiste.push(obj);
-          fs.writeFileSync(`./${this.nombre}`, JSON.stringify(siExiste));
-          return obj.id;
-        } else {
-          obj.id = 1;
-          fs.writeFileSync(`./${this.nombre}`, JSON.stringify([obj]));
-          return obj.id;
-        }
-      } catch (e) {
-        console.log(e);
-      }
+        knex(this.nombre).insert(obj).then(()=>{
+          console.log("register ok!!")
+        }).catch (err=> {
+        console.log(err)
+      })
     }
 
     getById(id){
@@ -58,17 +47,16 @@ class Contenedor {
   
   getAll() {
     // devuelve un array con los obj presentes en el archivo
-
-    if (fs.existsSync(`./${this.nombre}`)) {
-      let info = fs.readFileSync(`./${this.nombre}`, encodingFile);
+        knex.from(this.nombre).select("*")//esto devuelve promesa
+        .then((json)=>{
+            
+            return (json);
+        })
+        .catch(err=>{
+            console.log(err)
+          return err
+        })
       
-      let archivoProducto = JSON.parse(info);
-
-      return archivoProducto;
-    } else {
-      
-      return `No existe el archivo ${this.nombre}`;
-    }
   }
   
       //Elimina del archivo el objeto con el id buscado

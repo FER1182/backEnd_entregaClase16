@@ -9,11 +9,11 @@ const knex = require("knex")({
     },
    pool:{min:2, max:8}//como organizo las consultas
 })
-knex.schema.createTableIfNotExists("users",function(table){
+knex.schema.createTableIfNotExists("productos",function(table){
     table.increments("id").primary()
     table.string("name")
-    table.string("email",128) //el 128 son la cant de caracteres
-    table.string("password")
+    table.integer("price") 
+    table.string("urlFoto")
 })
 .then(()=>{
     console.log("Conexion y Tabla creada")
@@ -22,4 +22,4 @@ knex.schema.createTableIfNotExists("users",function(table){
     console.log(err)
 })
 
- module.export= knex
+ module.exports= knex

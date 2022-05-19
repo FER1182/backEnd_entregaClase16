@@ -2,13 +2,15 @@ const express = require("express");
 const { Router } = express;
 const Contenedor = require("./contenedor");
 const multer = require("multer");
+const app = express()
+app.use(express.json())
 
 let router = new Router();
-let archivo = new Contenedor("text.json");
+let archivo = new Contenedor("productos");
 
 router.get("/", async (req, res) => {
   let data = await archivo.getAll();
-   
+   console.log(data + " el get /")
   //  res.render("./partials/portada",{titulo:"QUE ME VAYA BIEN"})
   res.render("index", { data: data });
 });
@@ -24,14 +26,16 @@ let storage = multer.diskStorage({
 
 let upload = multer({ storage });
 
-router.get("/form", async(req,res)=>{
-  let data = await archivo.getAll();
+router.get("/form", (req,res)=>{
+  let data = archivo.getAll();
+  console.log(data + " juego")
   res.render("form",{data : data})
 })
 
 
 router.post("/form", (req, res) => {
   let data = archivo.getAll();
+  console.log(data)
   let newProduct = {
     name: req.body.name,
     price: req.body.price,

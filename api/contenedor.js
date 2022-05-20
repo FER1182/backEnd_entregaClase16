@@ -49,8 +49,10 @@ class Contenedor {
     // devuelve un array con los obj presentes en el archivo
         knex.from(this.nombre).select("*")//esto devuelve promesa
         .then((json)=>{
-            
-            return (json);
+        
+          let archivoProducto = json
+           
+          return archivoProducto;
         })
         .catch(err=>{
             console.log(err)

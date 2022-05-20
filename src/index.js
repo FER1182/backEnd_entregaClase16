@@ -3,7 +3,7 @@ const app = express()
 app.use(express.json())
 const productosRoutes = require("../api/productos");
 const Contenedor = require("../api/contenedor");
-
+const knex = require("../src/db")
 
 const port = process.env.PORT || 8080
 //midelwars de aplicacion
@@ -18,8 +18,9 @@ app.use("/",productosRoutes);
 
 //data
 let msn = [];
-let archivo = new Contenedor("productos");
-let data = archivo.getAll();
+
+
+
 
 //para servidor en la nube
 
@@ -41,7 +42,16 @@ const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log("un usuario se conecto");
-  socket.emit("mensage_back",data); //sirve para emitir mensajes
+      knex.from("productos").select("*")//esto devuelve promesa
+        .then((json)=>{
+          let archivoProducto = json
+          socket.emit("mensage_back",archivoProducto); //sirve para emitir mensajes
+        })
+        .catch(err=>{
+            console.log(err)
+          return err
+        })
+  
 
    //escuchar eventos de mensajes
   socket.on("mensaje_cliente",(cliente)=>{

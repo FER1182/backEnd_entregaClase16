@@ -2,6 +2,7 @@ const express = require("express");
 const { Router } = express;
 const Contenedor = require("./contenedor");
 const multer = require("multer");
+const knex = require("../src/db")
 const app = express()
 app.use(express.json())
 
@@ -9,10 +10,19 @@ let router = new Router();
 let archivo = new Contenedor("productos");
 
 router.get("/", async (req, res) => {
-  let data = await archivo.getAll();
-   console.log(data + " el get /")
+  //let data = await archivo.getAll();
+  // console.log(data + " el get /")
   //  res.render("./partials/portada",{titulo:"QUE ME VAYA BIEN"})
-  res.render("index", { data: data });
+  knex.from("productos").select("*")//esto devuelve promesa
+  .then((json)=>{
+    let archivoProducto = json
+    res.render("index", { data: archivoProducto });
+  })
+  .catch(err=>{
+      console.log(err)
+    return err
+  })
+ 
 });
 
 let storage = multer.diskStorage({
@@ -27,9 +37,16 @@ let storage = multer.diskStorage({
 let upload = multer({ storage });
 
 router.get("/form", (req,res)=>{
-  let data = archivo.getAll();
-  console.log(data + " juego")
-  res.render("form",{data : data})
+  knex.from("productos").select("*")//esto devuelve promesa
+  .then((json)=>{
+    let archivoProducto = json
+    res.render("form", { data: archivoProducto });
+  })
+  .catch(err=>{
+      console.log(err)
+    return err
+  })
+  
 })
 
 
